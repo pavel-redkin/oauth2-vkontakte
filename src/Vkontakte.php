@@ -5,6 +5,7 @@ namespace J4k\OAuth2\Client\Provider;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Vkontakte extends AbstractProvider
@@ -191,6 +192,20 @@ class Vkontakte extends AbstractProvider
         }
 
         return new VkontakteUser($response, $response['id']);
+    }
+
+    /**
+     * Sends a request instance and returns a response instance.
+     *
+     * WARNING: This method does not attempt to catch exceptions caused by HTTP
+     * errors! It is recommended to wrap this method in a try/catch block.
+     *
+     * @param  RequestInterface $request
+     * @return ResponseInterface
+     */
+    public function getResponse(RequestInterface $request)
+    {
+        return (string) $this->getHttpClient()->send($request)->getBody();
     }
 
     /**
