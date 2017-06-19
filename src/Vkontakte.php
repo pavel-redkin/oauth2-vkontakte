@@ -5,7 +5,6 @@ namespace J4k\OAuth2\Client\Provider;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Vkontakte extends AbstractProvider
@@ -195,20 +194,6 @@ class Vkontakte extends AbstractProvider
     }
 
     /**
-     * Sends a request instance and returns a response instance.
-     *
-     * WARNING: This method does not attempt to catch exceptions caused by HTTP
-     * errors! It is recommended to wrap this method in a try/catch block.
-     *
-     * @param  RequestInterface $request
-     * @return ResponseInterface
-     */
-    public function getResponse(RequestInterface $request)
-    {
-        return (string) $this->getHttpClient()->send($request)->getBody();
-    }
-
-    /**
      * @see https://vk.com/dev/users.get
      *
      * @param integer[]        $ids
@@ -234,7 +219,7 @@ class Vkontakte extends AbstractProvider
         $query   = $this->buildQueryString($params);
         $url     = "$this->baseUri/users.get?$query";
 
-        $response   = $this->getResponse($this->createRequest(static::METHOD_GET, $url, $token, []))['response'];
+        $response   = $this->getParsedResponse($this->createRequest(static::METHOD_GET, $url, $token, []))['response'];
         $users      = !empty($response['items']) ? $response['items'] : $response;
         $array2user = function ($userData) {
             return new VkontakteUser($userData);
@@ -264,7 +249,7 @@ class Vkontakte extends AbstractProvider
         $query   = $this->buildQueryString($params);
         $url     = "$this->baseUri/friends.get?$query";
 
-        $response     = $this->getResponse($this->createRequest(static::METHOD_GET, $url, $token, []))['response'];
+        $response     = $this->getParsedResponse($this->createRequest(static::METHOD_GET, $url, $token, []))['response'];
         $friends      = !empty($response['items']) ? $response['items'] : $response;
         $array2friend = function ($friendData) {
             if (is_numeric($friendData)) {
